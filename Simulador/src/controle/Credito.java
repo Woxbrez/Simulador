@@ -2,11 +2,12 @@ package controle;
 
 public class Credito {
 
-	private double valor;
+	private double valor = 0;
 	private int parcelas = 1;
 	private double porcLucro = 0.1;
-	private double taxaIntermediacao;
-	private double taxaParcelamento = 0.0299;
+	private double[] taxaIntermediacao = new double[] {0.07, 0.0499, 0.0559};
+	private double[] taxaParcelamento = new double[] { 0, 0, 0.0409, 0.0541, 0.0670, 0.0796, 0.0920, 0.1041, 0.1161,
+			0.1278, 0.1392, 0.1505, 0.1615 };
 
 	public double getValor() {
 		return valor;
@@ -18,30 +19,30 @@ public class Credito {
 
 	public double retornaValorVenda() {
 		double valorVenda;
-		if (parcelas == 1) {
-			this.taxaIntermediacao = 0.0499;
-		} else {
-			this.taxaIntermediacao = 0.0559;
-		}
-		valorVenda = this.valor + (this.valor * this.porcLucro) + (this.valor * this.taxaIntermediacao);
+		valorVenda = this.valor + (this.valor * this.porcLucro) + (this.valor * this.taxaIntermediacao[0]);
 		return valorVenda;
 	}
 
 	public double valorDescontado() {
-		return ((this.valor * this.taxaIntermediacao));
+		double valorDescontado;
+		if(this.parcelas > 2) {
+			valorDescontado = (this.valor * this.taxaIntermediacao[2]);
+		}
+		else {
+			valorDescontado = (this.valor * this.taxaIntermediacao[this.parcelas]);
+		}
+		return valorDescontado;
 	}
-	
+
 	public double valorLucro() {
-		return this.porcLucro * this.valor;
+		double lucro = this.retornaValorVenda() - this.valorDescontado() - this.valor;
+		return lucro;
 	}
 
 	public double retornaCustoFinal() {
 		double custoFinal;
-		if(this.parcelas == 1) {
-			custoFinal = this.retornaValorVenda();
-		}else {
-			custoFinal = this.retornaValorVenda() * Math.pow((1 + this.taxaParcelamento), this.parcelas);
-		}
+		custoFinal = this.retornaValorVenda() * this.taxaParcelamento[this.parcelas];
+		custoFinal = this.retornaValorVenda() + custoFinal;
 		return custoFinal;
 	}
 
